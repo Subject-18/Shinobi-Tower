@@ -19,6 +19,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] float speed;
 
     [SerializeField] bool invert = true;
+
+    [SerializeField] bool lockCursor = false;
+
     
 
     float rotationX;
@@ -26,7 +29,11 @@ public class CameraController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        if(lockCursor)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     // Update is called once per frame
@@ -40,6 +47,8 @@ public class CameraController : MonoBehaviour
             var focus = followTarget.position + new Vector3(framingOffset.x, framingOffset.y);
         transform.position = focus - targetRotation * new Vector3(0, 0, distance);
         transform.rotation = targetRotation;
+
+
             }
         else    
         {
@@ -54,6 +63,8 @@ public class CameraController : MonoBehaviour
 
         }
     }
+
+     
 
     public Quaternion PlanerRotation => Quaternion.Euler(0, rotationY, 0);
 }

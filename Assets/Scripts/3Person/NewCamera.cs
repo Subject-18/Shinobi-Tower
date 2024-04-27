@@ -4,68 +4,77 @@ using UnityEngine;
 
 public class NewCamera : MonoBehaviour
 {
-    public Transform targetTransform;
-    private Camera _Cam;
-    public Camera Cam{
-        get{
-            if(_Cam == null){
-                _Cam = GetComponent<Camera>();
+    [SerializeField] public bool lockcursor;
+
+    [SerializeField] public float sensitivity = 10;
+
+    [SerializeField] public Transform target;
+
+    Vector2 pitchMinMax = new Vector2(-20, 85);
+
+    public float smoothing = 0.12f;
+
+     Vector3 rotateSmoothvelocity;
+     Vector3 currentRotation;
+
+     float yaw;
+
+     float pitch;
+
+     Vector3 cameraDir;
+
+     public float cameraDistance;
+
+     Vector2 cameraDistanceMinMax = new Vector2(0.5f, 5);
+
+     public Camera cam;
+
+
+     void Start()
+     {
+
+            cameraDir = cam.transform.localPosition.normalized;
+            cameraDistance = cameraDistanceMinMax.y;
+            if(lockcursor)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
             }
-            return _Cam;
-        }
-    }
-    public bool isMoving;
-    [SerializeField] public Vector3 CamOffset = Vector3.zero;
-    [SerializeField] public Vector3 ZoomOffset = Vector3.zero;
-    public float senstivityX = 5;
-    public float senstivityY = 1;
-    public float minY = 30;
-    public float maxY = 50;
-    public bool isZooming;
-    private float currentX = 0;
-    private float currentY = 1;
-    void Start()
-    {
-        
-    }
+     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        currentX += Input.GetAxis("Mouse X");
-        currentY -= Input.GetAxis("Mouse Y");
-        currentX = Mathf.Repeat(currentX, 360);
-        currentY = Mathf.Clamp(currentY, minY, maxY);
-        isMoving = (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) ? true: false;
-        isZooming = Input.GetMouseButton(1);
-        if(isMoving || isZooming){
-            UpdatePlayerRotation();
-        }
-    }
+     void LateUpdate()
+     {
+        yaw+=Input.GetAxis("Mouse X") * sensitivity;
+        pitch+=Input.GetAxis("Mouse Y") * sensitivity;
 
-    void UpdatePlayerRotation(){
-        targetTransform.rotation = Quaternion.Euler (0, currentX, 0);
-    }
-    void LateUpdate(){
-        Vector3 dist = isZooming? ZoomOffset : CamOffset;
-        Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-        transform.position = targetTransform.position + rotation * dist;
-        transform.LookAt(targetTransform.position);
-        CheckWall();
-    }
-    public LayerMask wallLayer;
-    void CheckWall()
-    {
+        pitch=Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+
+        currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotateSmoothvelocity, smoothing);
+        transform.eulerAngles = currentRotation;
+
+        transform.position = Vector3.MoveTowards(transform.position, target.position, 0.5f);
+
+        CheckCameraCollsionAndOcclusion(cam);
+     }
+
+     public void CheckCameraCollsionAndOcclusion(Camera cam){
+        Vector3 desiredcamPos = transform.TransformPoint(cameraDir * cameraDistanceMinMax.y);
+
         RaycastHit hit;
-        Vector3 start = targetTransform.position;
-        Vector3 dir = transform.position - targetTransform.position;
-        float dist = CamOffset.z * -1;
-        Debug.DrawRay(targetTransform.position, dir, Color.green);
-        if(Physics.Raycast(targetTransform.position, dir, out hit, dist, wallLayer))
+
+        if(Physics.Linecast(transform.position, desiredcamPos, out hit))
         {
-            float hitDist = hit.distance;
-            Vector3 sphereCastCenter =  targetTransform.position + (dir.normalized * hitDist);
-            transform.position = sphereCastCenter;
+            cameraDistance = Mathf.Clamp(hit.distance, cameraDistanceMinMax.x, cameraDistanceMinMax.y);
+
         }
-    }
+        else
+        {
+            cameraDistance = cameraDistanceMinMax.y;
+        }
+
+        cam.transform.localPosition = cameraDir * cameraDistance;
+     }
+
+
+
 }

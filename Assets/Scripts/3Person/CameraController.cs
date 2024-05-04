@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] bool invert = true;
 
-    [SerializeField] bool lockCursor = false;
+    [SerializeField] bool lockCursor = true;
 
     
 

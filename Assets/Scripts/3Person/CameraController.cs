@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour
 
     //[SerializeField] bool lockCursor = true;
 
-    
+
 
     float rotationX;
     float rotationY;
@@ -43,8 +43,8 @@ public class CameraController : MonoBehaviour
             rotationY += Input.GetAxis("Mouse X") * speed;
             var targetRotation = Quaternion.Euler(rotationX, rotationY, 0);
             var focus = followTarget.position + new Vector3(framingOffset.x, framingOffset.y);
-        transform.position = focus - targetRotation * new Vector3(0, 0, distance);
-        transform.rotation = targetRotation;
+                transform.position = focus - targetRotation * new Vector3(0, 0, distance);
+            transform.rotation = targetRotation;
 
 
             }
@@ -56,8 +56,8 @@ public class CameraController : MonoBehaviour
 
             var targetRotation = Quaternion.Euler(-rotationX, -rotationY, 0);
             var focus = followTarget.position + new Vector3(framingOffset.x, framingOffset.y);
-        transform.position = focus - targetRotation * new Vector3(0, 0, distance);
-        transform.rotation = targetRotation;
+            transform.position = focus - targetRotation * new Vector3(0, 0, distance);
+            transform.rotation = targetRotation;
 
         }
     }

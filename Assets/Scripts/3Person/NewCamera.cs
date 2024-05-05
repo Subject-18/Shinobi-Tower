@@ -4,76 +4,42 @@ using UnityEngine;
 
 public class NewCamera : MonoBehaviour
 {
-    [SerializeField] public bool lockcursor;
+    
+    public float minDistance = 1.0f;
+	public float maxDistance = 4.0f;
+	public float smooth = 10.0f;
+	Vector3 dollyDir;
+	public Vector3 dollyDirAdjusted;
+	public float distance;
 
-    [SerializeField] public float sensitivity = 10;
+	public float dis_ray;
 
-    [SerializeField] public Transform target;
+	// Use this for initialization
+	void Awake()
+	{
+		dollyDir = transform.localPosition.normalized;
+		distance = transform.localPosition.magnitude;
+	}
 
-    Vector2 pitchMinMax = new Vector2(-20, 85);
+	// Update is called once per frame
+	void Update()
+	{
 
-    public float smoothing = 0.12f;
+		Vector3 desiredCameraPos = transform.parent.TransformPoint(dollyDir * maxDistance);
+		RaycastHit hit;
 
-     Vector3 rotateSmoothvelocity;
-     Vector3 currentRotation;
+		if (Physics.Linecast(transform.parent.position, desiredCameraPos, out hit))
+		{
+			distance = Mathf.Clamp((hit.distance * dis_ray), minDistance, maxDistance);
 
-     float yaw;
+		}
+		else
+		{
+			distance = maxDistance;
+		}
 
-     float pitch;
-
-     Vector3 cameraDir;
-
-     public float cameraDistance;
-
-     Vector2 cameraDistanceMinMax = new Vector2(0.5f, 5);
-
-     public Camera cam;
-
-
-     void Start()
-     {
-
-            cameraDir = cam.transform.localPosition.normalized;
-            cameraDistance = cameraDistanceMinMax.y;
-            if(lockcursor)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-     }
-
-     void LateUpdate()
-     {
-        yaw+=Input.GetAxis("Mouse X") * sensitivity;
-        pitch+=Input.GetAxis("Mouse Y") * sensitivity;
-
-        pitch=Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
-
-        currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotateSmoothvelocity, smoothing);
-        transform.eulerAngles = currentRotation;
-
-        transform.position = Vector3.MoveTowards(transform.position, target.position, 0.5f);
-
-        CheckCameraCollsionAndOcclusion(cam);
-     }
-
-     public void CheckCameraCollsionAndOcclusion(Camera cam){
-        Vector3 desiredcamPos = transform.TransformPoint(cameraDir * cameraDistanceMinMax.y);
-
-        RaycastHit hit;
-
-        if(Physics.Linecast(transform.position, desiredcamPos, out hit))
-        {
-            cameraDistance = Mathf.Clamp(hit.distance, cameraDistanceMinMax.x, cameraDistanceMinMax.y);
-
-        }
-        else
-        {
-            cameraDistance = cameraDistanceMinMax.y;
-        }
-
-        cam.transform.localPosition = cameraDir * cameraDistance;
-     }
+		transform.localPosition = Vector3.Lerp(transform.localPosition, dollyDir * distance, Time.deltaTime * smooth);
+	}
 
 
 

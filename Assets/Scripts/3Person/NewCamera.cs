@@ -10,7 +10,7 @@ public class NewCamera : MonoBehaviour
 	public float smooth = 10.0f;
 	Vector3 dollyDir;
 	public Vector3 dollyDirAdjusted;
-	public float distance;
+	public float newdistance;
 
 	public float dis_ray;
 
@@ -18,7 +18,7 @@ public class NewCamera : MonoBehaviour
 	void Awake()
 	{
 		dollyDir = transform.localPosition.normalized;
-		distance = transform.localPosition.magnitude;
+		newdistance = transform.localPosition.magnitude;
 	}
 
 	// Update is called once per frame
@@ -30,15 +30,15 @@ public class NewCamera : MonoBehaviour
 
 		if (Physics.Linecast(transform.parent.position, desiredCameraPos, out hit))
 		{
-			distance = Mathf.Clamp((hit.distance * dis_ray), minDistance, maxDistance);
+			newdistance = Mathf.Clamp((hit.distance * dis_ray), minDistance, maxDistance);
 
 		}
 		else
 		{
-			distance = maxDistance;
+			newdistance = maxDistance;
 		}
 
-		transform.localPosition = Vector3.Lerp(transform.localPosition, dollyDir * distance, Time.deltaTime * smooth);
+		transform.localPosition = Vector3.Lerp(transform.localPosition, dollyDir * newdistance, Time.deltaTime * smooth);
 	}
 
 

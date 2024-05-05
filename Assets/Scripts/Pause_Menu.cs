@@ -5,13 +5,18 @@ using UnityEngine.SceneManagement;
 
 public class Pause_Menu : MonoBehaviour
 {
-    [SerializeField] GameObject pausemenu;
-    public bool ispaused;
+    public static bool ispaused = false;
+    public GameObject PauseMenuCanvas;
+    public  void Start()
+    {
+        Time.timeScale = 1.0f;
+    }
+    
     public void Update()
     {
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            if(!ispaused)
+            if(ispaused)
             {
                 resume();
             }
@@ -24,15 +29,17 @@ public class Pause_Menu : MonoBehaviour
     
     public void pause()
     {
-        pausemenu.SetActive(true);
+        PauseMenuCanvas.SetActive(true);
         Time.timeScale = 0f;
         ispaused = true;
+        Cursor.visible = true;
     }
     public void resume()
     {
-        pausemenu.SetActive(false);
+        PauseMenuCanvas.SetActive(false);
         Time.timeScale = 1f;
         ispaused = false;
+        Cursor.visible = false;
     }
     public void quitgame()
     {

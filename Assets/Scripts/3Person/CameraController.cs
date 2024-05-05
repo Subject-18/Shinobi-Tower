@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] bool invert = true;
 
-    [SerializeField] bool lockCursor = true;
+    //[SerializeField] bool lockCursor = true;
 
     
 
@@ -29,11 +29,9 @@ public class CameraController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(lockCursor)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-        }
+           // Cursor.lockState = CursorLockMode.Locked;
+            
     }
 
     // Update is called once per frame

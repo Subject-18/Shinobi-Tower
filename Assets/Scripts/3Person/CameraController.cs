@@ -59,7 +59,7 @@ public class CameraController : MonoBehaviour
             transform.position = focus - targetRotation * new Vector3(0, 0, distance);
             transform.rotation = targetRotation;
 
-        }
+    }
     }
 
      

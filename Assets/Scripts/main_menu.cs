@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class main_menu : MonoBehaviour
 {
+    void Start()
+    {
+        Cursor.visible = true;
+    }
     public void Playgame(){
         SceneManager.LoadSceneAsync(1);
     }
